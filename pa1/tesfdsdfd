@@ -1,0 +1,81 @@
+/*
+  Thomas Pham
+  CruzID: 1593385
+  pa1
+*/
+import java.io.*;
+import java.util.*;
+
+class Lex{
+	public static void main(String[] args) throws IOException{
+			//creating objects to use
+			Scanner in = null;
+      PrintWriter out = null;
+      String line = null;
+
+      if(args.length != 2){
+       System.err.println("Usage: FileIO infile outfile");
+       System.exit(1);
+      }
+
+      in = new Scanner(new File(args[0]));
+    	out = new PrintWriter(new FileWriter(args[1]));
+
+      String lines[] = new String[getLineCount(in)];
+      List list = new List();
+
+      in = new Scanner(new File(args[0])); //resetting scanner to front of file
+
+      for(int i = 0; i < lines.length; i++){
+    	  //find the next element that is not in the list
+    	  int smallestIndex = 0;
+    	  while(isInList(list,smallestIndex)) {//getting the next index that has not been used yet
+						//to compare.
+    		  smallestIndex++;
+    	  }
+    	  for(int j = smallestIndex; j < lines.length; j++) {
+    		  if(lines[smallestIndex].compareTo(lines[j]) > 0 && !isInList(list,j)){ //making sure
+							//we get an index that is not already used.
+    			 smallestIndex = j;
+    		  }
+    	  }
+    	  list.append(smallestIndex);//add the index to our list
+				System.out.println(lines[smallestIndex]);
+        }
+      	writeFile(list,lines,out);
+    }
+
+		public static void writeFile(List list, String[] lines, PrintWriter out) throws IOException{
+			//BufferedWriter bw = new BufferedWriter(out);
+			String[] token = null;
+      String output = list.toString();
+      list.moveFront();
+      token = output.split("\\s+"); //splitting list by space
+
+      for(int i = 0; i < token.length; i++){
+        out.println(lines[Integer.parseInt(token[i])]);
+        //out.flush();
+      }
+			out.close();
+    }
+
+    public static boolean isInList(List list, int i){
+      list.moveFront();//go to the front of the list
+      while(list.index() != -1){//-1 is when cursor is out of bounds
+        if(list.get() == i)
+          return true;
+        list.moveNext();
+      }
+      return false;//not in entire list, so return false
+    }
+
+    public static int getLineCount(Scanner in){
+      int lineCount = 0;
+      String line = "";
+      while(in.hasNextLine()){
+        line = in.nextLine();
+        lineCount++;
+      }
+      return lineCount;
+    }
+}
